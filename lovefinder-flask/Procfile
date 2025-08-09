@@ -1,1 +1,1 @@
-web: gunicorn app:app --chdir lovefinder-flask
+web: gunicorn lovefinder-flask.app:app
