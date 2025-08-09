@@ -1,0 +1,25 @@
+<!-- templates/result.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>결과</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="stage">
+    <h1 class="title">결과</h1>
+    <div class="card" style="text-align:center;">
+      {% if matched %}
+        <p class="big">❤️ 서로 좋아해요!</p>
+      {% else %}
+        <p class="big">💔 서로 아니에요</p>
+      {% endif %}
+      <div style="margin-top:12px;">
+        <a class="btn-plain" href="/">돌아가기</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

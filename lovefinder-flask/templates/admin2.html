@@ -1,0 +1,45 @@
+<!-- templates/admin2.html -->
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>데이터 관리자</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="stage">
+    <h1 class="title">안산동산고등학교 학생호 ㅣ</h1>
+    <div class="card">
+      {% if error %}
+        <p class="small" style="color:#ffb4b4">{{ error }}</p>
+      {% endif %}
+      <form method="post" action="/admin2">
+        <label class="small">학번</label>
+        <input name="code" placeholder="09523" />
+        <label class="small">이름</label>
+        <input name="name" placeholder="노무현" />
+        <label class="small">좋아하는 사람</label>
+        <input name="crush" placeholder="전두환518" />
+        <div style="margin-top:10px;">
+          <button class="btn" type="submit">확인</button>
+        </div>
+      </form>
+
+      {% if entries %}
+        <div style="margin-top:12px;">
+          <p class="small">참여자 수: {{ stats.participantCount }} | 매칭 수: {{ stats.matchCount }}</p>
+          <pre style="background:transparent; color:#dfe7f3; max-height:320px; overflow:auto;">{{ entries|tojson(indent=2) }}</pre>
+
+          <form method="post" action="/admin2/export">
+            <input type="hidden" name="code" value="09523">
+            <input type="hidden" name="name" value="노무현">
+            <input type="hidden" name="crush" value="전두환518">
+            <button class="btn-plain" type="submit">CSV 내보내기</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+
+    <a href="/" class="btn-plain" style="margin-top:12px; display:inline-block">돌아가기</a>
+  </main>
+</body>
+</html>

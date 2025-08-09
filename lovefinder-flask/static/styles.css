@@ -1,0 +1,65 @@
+/* static/styles.css */
+:root {
+  --bg: #0f1720;
+  --card: #111317;
+  --accent1: #ff6b6b;
+  --accent2: #6b8cff;
+  --muted: #9aa4b2;
+  --text: #ecf0f3;
+}
+
+* { box-sizing: border-box; }
+html,body { height:100%; margin:0; padding:0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.stage {
+  width: min(720px, 96vw);
+  margin: auto;
+  text-align:center;
+  padding:28px;
+  border-radius:14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+}
+
+.title {
+  font-size: 28px;
+  margin: 6px 0 8px 0;
+  font-weight:700;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
+}
+
+.subtitle { color: var(--muted); margin-bottom:18px; }
+.card { background: rgba(10,12,14,0.6); padding:18px; border-radius:10px; margin:12px auto; max-width:640px; text-align:left; }
+
+input[type="text"], input[type="password"], input[type="number"] {
+  width:100%; padding:12px 14px; margin:8px 0; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:#0b0c0f; color:var(--text); font-size:14px; outline:none; transition: box-shadow .15s ease, transform .08s ease;
+}
+input:focus { box-shadow: 0 6px 18px rgba(107,140,255,0.08); transform: translateY(-2px); }
+
+.btn { display:inline-block; padding:10px 16px; border-radius:10px; border:0; cursor:pointer; font-weight:600; background: linear-gradient(90deg, var(--accent1), var(--accent2)); color:#081026; box-shadow: 0 8px 20px rgba(6,10,30,0.5); transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+.btn-plain { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px; }
+
+.note { font-size:13px; color:var(--muted); margin-top:10px; }
+.big { font-size:20px; font-weight:700; text-align:center; }
+.small { font-size:15px; color:var(--muted); }
+
+/* admin pre style */
+.card pre { white-space: pre-wrap; word-break: break-word; font-size:13px; color:#dfe7f3; }
+@media (max-width:480px) { .stage { padding:18px; } .title { font-size:20px; } }

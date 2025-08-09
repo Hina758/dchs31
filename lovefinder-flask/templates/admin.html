@@ -1,0 +1,44 @@
+<!-- templates/admin.html -->
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>관리자</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="stage">
+    <h1 class="title">관리자 페이지</h1>
+    <div class="card">
+      {% if error %}
+        <p class="small" style="color:#ffb4b4">{{ error }}</p>
+      {% endif %}
+      {% if success %}
+        <p class="small" style="color:#b8ffb8">{{ success }}</p>
+      {% endif %}
+      <form method="post" action="/admin">
+        <label class="small">관리자 코드 또는 학번</label>
+        <input name="code" placeholder="코드 또는 학번을 입력하세요" />
+        <label class="small">이름 (선택)</label>
+        <input name="name" placeholder="이름 입력 (admin 등)" />
+        <div style="margin-top:10px;">
+          <button class="btn" type="submit">확인</button>
+        </div>
+      </form>
+
+      {% if participantCount is not none %}
+        <div style="margin-top:12px;">
+          <p class="small">참여자 수: {{ participantCount }}</p>
+          <p class="small">공개 상태: {{ '공개' if public else '비공개' }}</p>
+          <form method="post" action="/admin" style="margin-top:8px;">
+            <input type="hidden" name="code" value="81818">
+            <input type="hidden" name="name" value="admin">
+            <input type="hidden" name="action" value="toggle">
+            <button class="btn" type="submit">공개 토글</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+    <a href="/" class="btn-plain" style="margin-top:12px; display:inline-block">돌아가기</a>
+  </main>
+</body>
+</html>
