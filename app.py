@@ -9,7 +9,7 @@ from datetime import datetime
 app = Flask(__name__)
 DB_PATH = os.path.join(os.path.dirname(__file__), 'data.db')
 
-# --- DB helpers ---
+# --- DB helpers --- 데이터베이스를 도와주는 애들.. sqlite 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:

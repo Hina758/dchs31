@@ -25,7 +25,7 @@
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({ studentNo: s, name: n, crush: c })
         });
-        if (res.status === 409) { alert('이미 제출된 학번/이름입니다.'); submitBtn.disabled=false; submitBtn.innerText='시작!'; return; }
+        if (res.status === 409) { alert('이미 제출된 학번/이름입니다! 어디서!'); submitBtn.disabled=false; submitBtn.innerText='시작!'; return; }
         if (!res.ok) { alert('서버 오류'); submitBtn.disabled=false; submitBtn.innerText='시작!'; return; }
         // save minimal local for result checking flow; now go to wait page
         localStorage.setItem('lm_payload', JSON.stringify({ studentNo: s, name: n, crush: c }));
