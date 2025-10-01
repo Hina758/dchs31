@@ -13,9 +13,10 @@
 
     submitBtn.addEventListener('click', async ()=>{
       const s = studentNo.value.trim(), n = nameI.value.trim(), c = crush.value.trim();
-      // admin shortcuts: go to admin pages without submit
-      if (s === '81818' && (n === 'admin' || n === 'admin8')) { location.href = '/admin'; return; }
-      if (s === '09523' && n === '노무현' && c === '전두환518') { location.href = '/admin2'; return; }
+
+      // MODIFIED: admin shortcuts, 이 부분을 수정했습니다!
+      if (s === '01911' && n === '이재율' && c === '박준혁') { location.href = '/admin'; return; }
+      if (s === '77777' && n === '허찬영' && c === '한승원') { location.href = '/admin2'; return; }
 
       submitBtn.disabled = true;
       submitBtn.innerText = '제출 중...';

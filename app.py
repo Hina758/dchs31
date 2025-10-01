@@ -9,7 +9,6 @@ from datetime import datetime
 app = Flask(__name__)
 DB_PATH = os.path.join(os.path.dirname(__file__), 'data.db')
 
-# 데이터베이스를 도와주는 넘덜 ㅎㅎ.. sqlite 한글 안깨지게 추가작업 해야함
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -35,7 +34,6 @@ def init_db():
         value TEXT
       )
     ''')
-    # ensure public flag exists 공용플레그 확인 작업
     cur = db.execute("SELECT value FROM meta WHERE key='public'")
     if cur.fetchone() is None:
         db.execute("INSERT INTO meta (key, value) VALUES ('public','false')")
@@ -57,7 +55,6 @@ def set_public_flag(flag: bool):
     db.execute("REPLACE INTO meta (key, value) VALUES ('public', ?)", ('true' if flag else 'false',))
     db.commit()
 
-# init DB on startup
 with app.app_context():
     init_db()
 
@@ -69,7 +66,6 @@ ADMIN2_NAME = '허찬영'
 ADMIN2_CRUSH = '한승원'
 
 # --- routes ---
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -92,7 +88,6 @@ def submit():
         db.commit()
     except sqlite3.IntegrityError:
         return jsonify({'ok': False, 'error': 'duplicate'}), 409
-
     return jsonify({'ok': True})
 
 @app.route('/result-wait')
@@ -127,40 +122,32 @@ def api_public():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    # MODIFIED: Show stats on GET
+    participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
+    public_flag = get_public_flag()
+
     if request.method == 'GET':
-        participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
-        return render_template('admin.html', participantCount=participant_count, public=get_public_flag())
+        return render_template('admin.html', participantCount=participant_count, public=public_flag)
 
     # POST Logic
     code = (request.form.get('code') or '').strip()
     name = (request.form.get('name') or '').strip()
 
-    # MODIFIED: Check new admin credentials
     if not (code == ADMIN1_CODE and name in ADMIN1_NAMES):
-        participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
-        # Return status info even on error
-        return render_template('admin.html', error='권한 없음', participantCount=participant_count, public=get_public_flag())
+        return render_template('admin.html', error='권한 없음', participantCount=participant_count, public=public_flag)
 
     action = request.form.get('action')
     if action == 'toggle':
-        new_flag = not get_public_flag()
+        new_flag = not public_flag
         set_public_flag(new_flag)
-        # MODIFIED: Clearer success message
         status_text = "공개" if new_flag else "비공개"
         success_msg = f'공개 상태를 \'{status_text}\'(으)로 변경했습니다.'
-        participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
         return render_template('admin.html', success=success_msg, participantCount=participant_count, public=new_flag)
 
-    # Fallback for POST without action
-    participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
-    return render_template('admin.html', participantCount=participant_count, public=get_public_flag())
-
+    return render_template('admin.html', participantCount=participant_count, public=public_flag)
 
 @app.route('/admin2', methods=['GET', 'POST'])
 def admin2():
-    # MODIFIED: Show data directly on GET
-    if request.method == 'GET':
+    def get_all_data():
         rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
         rows = [dict(r) for r in rows]
         pairs = set()
@@ -170,50 +157,32 @@ def admin2():
                 key = tuple(sorted([r['name'], rec[0]['name']]))
                 pairs.add(key)
         stats = {'participantCount': len(rows), 'matchCount': len(pairs)}
-        return render_template('admin2.html', entries=rows, stats=stats)
+        return rows, stats
 
-    # POST Logic (for viewing data after entering credentials)
+    entries, stats = get_all_data()
+
+    if request.method == 'GET':
+        return render_template('admin2.html', entries=entries, stats=stats)
+
+    # POST Logic for auth check (mostly for CSV export)
     code = (request.form.get('code') or '').strip()
     name = (request.form.get('name') or '').strip()
     crush = (request.form.get('crush') or '').strip()
-    
-    # MODIFIED: Check new admin2 credentials
+
     if not (code == ADMIN2_CODE and name == ADMIN2_NAME and crush == ADMIN2_CRUSH):
-        # Even if auth fails, show data as per "no 2-factor" request
-        rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
-        rows = [dict(r) for r in rows]
-        pairs = set()
-        for r in rows:
-            rec = [x for x in rows if x['name'] == r['crush'] and x['crush'] == r['name']]
-            if rec:
-                key = tuple(sorted([r['name'], rec[0]['name']]))
-                pairs.add(key)
-        stats = {'participantCount': len(rows), 'matchCount': len(pairs)}
-        return render_template('admin2.html', error='권한 없음', entries=rows, stats=stats)
+        return render_template('admin2.html', error='권한 없음', entries=entries, stats=stats)
 
-
-    rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
-    rows = [dict(r) for r in rows]
-    pairs = set()
-    for r in rows:
-        rec = [x for x in rows if x['name'] == r['crush'] and x['crush'] == r['name']]
-        if rec:
-            key = tuple(sorted([r['name'], rec[0]['name']]))
-            pairs.add(key)
-    stats = {'participantCount': len(rows), 'matchCount': len(pairs)}
-    return render_template('admin2.html', entries=rows, stats=stats)
-
+    return render_template('admin2.html', entries=entries, stats=stats)
 
 @app.route('/admin2/export', methods=['POST'])
 def admin2_export():
     code = (request.form.get('code') or '').strip()
     name = (request.form.get('name') or '').strip()
     crush = (request.form.get('crush') or '').strip()
-    
-    # MODIFIED: Check new admin2 credentials for export
+
     if not (code == ADMIN2_CODE and name == ADMIN2_NAME and crush == ADMIN2_CRUSH):
         abort(403)
-        
+
     rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
     si = StringIO()
     cw = csv.writer(si)
