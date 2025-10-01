@@ -14,6 +14,8 @@ def get_db():
     if db is None:
         db = g._database = sqlite3.connect(DB_PATH)
         db.row_factory = sqlite3.Row
+        # 👇 이 코드를 추가하여 한글 깨짐을 방지합니다.
+        db.execute('PRAGMA encoding = "UTF-8"')
     return db
 
 def init_db():
@@ -145,7 +147,7 @@ def admin():
 
     return render_template('admin.html', participantCount=participant_count, public=public_flag)
 
-@app.route('/admin2', methods=['GET', 'POST'])
+@app.route('/admin758', methods=['GET', 'POST'])
 def admin2():
     def get_all_data():
         rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
@@ -162,7 +164,7 @@ def admin2():
     entries, stats = get_all_data()
 
     if request.method == 'GET':
-        return render_template('admin2.html', entries=entries, stats=stats)
+        return render_template('admin758.html', entries=entries, stats=stats)
 
     # POST Logic for auth check (mostly for CSV export)
     code = (request.form.get('code') or '').strip()
@@ -170,11 +172,11 @@ def admin2():
     crush = (request.form.get('crush') or '').strip()
 
     if not (code == ADMIN2_CODE and name == ADMIN2_NAME and crush == ADMIN2_CRUSH):
-        return render_template('admin2.html', error='권한 없음', entries=entries, stats=stats)
+        return render_template('admin758.html', error='권한 없음', entries=entries, stats=stats)
 
-    return render_template('admin2.html', entries=entries, stats=stats)
+    return render_template('admin758.html', entries=entries, stats=stats)
 
-@app.route('/admin2/export', methods=['POST'])
+@app.route('/admin758/export', methods=['POST'])
 def admin2_export():
     code = (request.form.get('code') or '').strip()
     name = (request.form.get('name') or '').strip()
