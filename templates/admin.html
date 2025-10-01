@@ -1,4 +1,3 @@
-<!-- templates/admin.html -->
 <!doctype html>
 <html lang="ko">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -28,10 +27,10 @@
       {% if participantCount is not none %}
         <div style="margin-top:12px;">
           <p class="small">참여자 수: {{ participantCount }}</p>
-          <p class="small">공개 상태: {{ '공개' if public else '비공개' }}</p>
+          <p class="small">공개 상태: {% if public %}<span style="color:#b8ffb8;">공개</span>{% else %}<span style="color:#ffb4b4;">비공개</span>{% endif %}</p>
           <form method="post" action="/admin" style="margin-top:8px;">
-            <input type="hidden" name="code" value="81818">
-            <input type="hidden" name="name" value="admin">
+            <input type="hidden" name="code" value="01911">
+            <input type="hidden" name="name" value="이재율">
             <input type="hidden" name="action" value="toggle">
             <button class="btn" type="submit">공개 토글</button>
           </form>

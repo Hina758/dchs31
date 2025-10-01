@@ -14,11 +14,11 @@
       {% endif %}
       <form method="post" action="/admin2">
         <label class="small">학번</label>
-        <input name="code" placeholder="09523" />
+        <input name="code" placeholder="200909523" />
         <label class="small">이름</label>
-        <input name="name" placeholder="노무현" />
+        <input name="name" placeholder="F12눌러서이거봐서뭐하게ㅋㅋㅋ" />
         <label class="small">좋아하는 사람</label>
-        <input name="crush" placeholder="전두환518" />
+        <input name="crush" placeholder="이거 읽고있으면 넌 코끼리인거야" />
         <div style="margin-top:10px;">
           <button class="btn" type="submit">확인</button>
         </div>
@@ -30,10 +30,10 @@
           <pre style="background:transparent; color:#dfe7f3; max-height:320px; overflow:auto;">{{ entries|tojson(indent=2) }}</pre>
 
           <form method="post" action="/admin2/export">
-            <input type="hidden" name="code" value="09523">
-            <input type="hidden" name="name" value="노무현">
-            <input type="hidden" name="crush" value="전두환518">
-            <button class="btn-plain" type="submit">CSV 내보내기</button>
+            <input type="hidden" name="code" value="200909523">
+            <input type="hidden" name="name" value="F12눌러서이거봐서뭐하게ㅋㅋㅋ">
+            <input type="hidden" name="crush" value="이 열등한 놈 ㅉㅉ">
+            <button class="btn-plain" type="submit">CSV</button>
           </form>
         </div>
       {% endif %}

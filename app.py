@@ -9,7 +9,7 @@ from datetime import datetime
 app = Flask(__name__)
 DB_PATH = os.path.join(os.path.dirname(__file__), 'data.db')
 
-# --- DB helpers --- 데이터베이스를 도와주는 애들.. sqlite 
+# 데이터베이스를 도와주는 넘덜 ㅎㅎ.. sqlite 한글 안깨지게 추가작업 해야함
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -35,7 +35,7 @@ def init_db():
         value TEXT
       )
     ''')
-    # ensure public flag exists
+    # ensure public flag exists 공용플레그 확인 작업
     cur = db.execute("SELECT value FROM meta WHERE key='public'")
     if cur.fetchone() is None:
         db.execute("INSERT INTO meta (key, value) VALUES ('public','false')")
@@ -62,8 +62,11 @@ with app.app_context():
     init_db()
 
 # --- constants for admin codes ---
-GENERAL_ADMIN_SIDS = ['81818', 'admin', 'admin8']
-DATA_ADMIN_SID = '09523'  # plus name '노무현' and crush '전두환518'
+ADMIN1_CODE = '01911'
+ADMIN1_NAMES = ['이재율', '박준혁']
+ADMIN2_CODE = '77777'
+ADMIN2_NAME = '허찬영'
+ADMIN2_CRUSH = '한승원'
 
 # --- routes ---
 
@@ -124,56 +127,93 @@ def api_public():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    # MODIFIED: Show stats on GET
     if request.method == 'GET':
-        return render_template('admin.html')
+        participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
+        return render_template('admin.html', participantCount=participant_count, public=get_public_flag())
+
+    # POST Logic
     code = (request.form.get('code') or '').strip()
     name = (request.form.get('name') or '').strip()
-    ok = False
-    if code in GENERAL_ADMIN_SIDS:
-        ok = True
-    if code == '81818' and (name == 'admin' or name == 'admin8'):
-        ok = True
-    if not ok:
-        return render_template('admin.html', error='권한 없음')
+
+    # MODIFIED: Check new admin credentials
+    if not (code == ADMIN1_CODE and name in ADMIN1_NAMES):
+        participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
+        # Return status info even on error
+        return render_template('admin.html', error='권한 없음', participantCount=participant_count, public=get_public_flag())
 
     action = request.form.get('action')
     if action == 'toggle':
         new_flag = not get_public_flag()
         set_public_flag(new_flag)
-        return render_template('admin.html', success=f'공개 상태 변경: {new_flag}')
+        # MODIFIED: Clearer success message
+        status_text = "공개" if new_flag else "비공개"
+        success_msg = f'공개 상태를 \'{status_text}\'(으)로 변경했습니다.'
+        participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
+        return render_template('admin.html', success=success_msg, participantCount=participant_count, public=new_flag)
+
+    # Fallback for POST without action
     participant_count = get_db().execute("SELECT COUNT(*) AS cnt FROM submissions").fetchone()['cnt']
     return render_template('admin.html', participantCount=participant_count, public=get_public_flag())
 
+
 @app.route('/admin2', methods=['GET', 'POST'])
 def admin2():
+    # MODIFIED: Show data directly on GET
     if request.method == 'GET':
-        return render_template('admin2.html')
+        rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
+        rows = [dict(r) for r in rows]
+        pairs = set()
+        for r in rows:
+            rec = [x for x in rows if x['name'] == r['crush'] and x['crush'] == r['name']]
+            if rec:
+                key = tuple(sorted([r['name'], rec[0]['name']]))
+                pairs.add(key)
+        stats = {'participantCount': len(rows), 'matchCount': len(pairs)}
+        return render_template('admin2.html', entries=rows, stats=stats)
+
+    # POST Logic (for viewing data after entering credentials)
     code = (request.form.get('code') or '').strip()
     name = (request.form.get('name') or '').strip()
     crush = (request.form.get('crush') or '').strip()
-    if not (code == DATA_ADMIN_SID and name == '노무현' and crush == '전두환518'):
-        return render_template('admin2.html', error='권한 없음')
+    
+    # MODIFIED: Check new admin2 credentials
+    if not (code == ADMIN2_CODE and name == ADMIN2_NAME and crush == ADMIN2_CRUSH):
+        # Even if auth fails, show data as per "no 2-factor" request
+        rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
+        rows = [dict(r) for r in rows]
+        pairs = set()
+        for r in rows:
+            rec = [x for x in rows if x['name'] == r['crush'] and x['crush'] == r['name']]
+            if rec:
+                key = tuple(sorted([r['name'], rec[0]['name']]))
+                pairs.add(key)
+        stats = {'participantCount': len(rows), 'matchCount': len(pairs)}
+        return render_template('admin2.html', error='권한 없음', entries=rows, stats=stats)
+
 
     rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
-    rows = [dict(r) for r in rows]  # Row → dict 변환
-
+    rows = [dict(r) for r in rows]
     pairs = set()
     for r in rows:
         rec = [x for x in rows if x['name'] == r['crush'] and x['crush'] == r['name']]
         if rec:
             key = tuple(sorted([r['name'], rec[0]['name']]))
             pairs.add(key)
-
     stats = {'participantCount': len(rows), 'matchCount': len(pairs)}
     return render_template('admin2.html', entries=rows, stats=stats)
+
 
 @app.route('/admin2/export', methods=['POST'])
 def admin2_export():
     code = (request.form.get('code') or '').strip()
     name = (request.form.get('name') or '').strip()
     crush = (request.form.get('crush') or '').strip()
-    if not (code == DATA_ADMIN_SID and name == '노무현' and crush == '전두환518'):
+    
+    # MODIFIED: Check new admin2 credentials for export
+    if not (code == ADMIN2_CODE and name == ADMIN2_NAME and crush == ADMIN2_CRUSH):
         abort(403)
+        
     rows = get_db().execute("SELECT * FROM submissions ORDER BY createdAt DESC").fetchall()
     si = StringIO()
     cw = csv.writer(si)

@@ -1,33 +1,32 @@
-<!-- templates/index.html -->
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>걔도 날 좋아할까?</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>걔도 날 좋아할까?</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <main class="stage">
-    <h1 class="title">걔도 날 좋아할까?</h1>
-    <p class="subtitle">☭안산동산고등학교 학생회☭</p>
+  <main class="stage">
+    <h1 class="title">걔도 날 좋아할까?</h1>
+    <p class="subtitle">안산동산고등학교 학생회</p>
 
-    <form id="form" class="card" method="post" action="/submit" onsubmit="return false;">
-      <label class="small">학번</label>
-      <input id="studentNo" name="studentNo" type="text" placeholder="예: 11100" />
-      <label class="small">이름</label>
-      <input id="name" name="name" type="text" placeholder="예: 차은우" />
-      <label class="small">좋아하는 사람 이름</label>
-      <input id="crush" name="crush" type="text" placeholder="예: 카리나" />
-      <div style="display:flex; gap:10px; margin-top:12px;">
-        <button id="submitBtn" class="btn" type="button" disabled>시작!</button>
-        <a href="/check" class="btn-plain" style="align-self:center; padding:10px 12px;">결과 확인</a>
-      </div>
-    </form>
+    <form id="form" class="card" method="post" action="/submit" onsubmit="return false;">
+      <label class="small">학번</label>
+      <input id="studentNo" name="studentNo" type="text" placeholder="예: 11100" />
+      <label class="small">이름</label>
+      <input id="name" name="name" type="text" placeholder="예: 차은우" />
+      <label class="small">좋아하는 사람 이름</label>
+      <input id="crush" name="crush" type="text" placeholder="예: 윈터" />
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button id="submitBtn" class="btn" type="button" disabled>시작!</button>
+        <a href="/check" class="btn-plain" style="align-self:center; padding:10px 12px;">결과 확인</a>
+      </div>
+    </form>
 
-    <p class="note">☭학생회☭</p>
-  </main>
+    <p class="note">학생회</p>
+  </main>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

@@ -1,30 +1,29 @@
-<!-- templates/result_wait.html -->
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>제출 완료</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>제출 완료</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <main class="stage">
-    <h1 class="title small">제출이 완료되었습니다.</h1>
-    <div class="card">
-      <p id="msg">결과를 기다려주세요. 관리자가 공개하면 자동으로 결과 페이지로 이동합니다.</p>
-      <a href="/" class="btn-plain">돌아가기</a>
-    </div>
-  </main>
+  <main class="stage">
+    <h1 class="title small">제출이 완료되었습니다.</h1>
+    <div class="card">
+      <p id="msg">결과를 기다려주세요...</p>
+      <a href="/" class="btn-plain">돌아가기</a>
+    </div>
+  </main>
 
-  <script>
-    async function checkAndRedirect(){
-      try {
-        const r = await fetch('/api/public');
-        const j = await r.json();
-        if (j.public) location.href = '/check';
-      } catch(e){}
-    }
-    checkAndRedirect();
-    setInterval(checkAndRedirect, 3000);
-  </script>
+  <script>
+    async function checkAndRedirect(){
+      try {
+        const r = await fetch('/api/public');
+        const j = await r.json();
+        if (j.public) location.href = '/check';
+      } catch(e){}
+    }
+    checkAndRedirect();
+    setInterval(checkAndRedirect, 3000);
+  </script>
 </body>
 </html>
